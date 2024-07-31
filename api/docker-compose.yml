@@ -1,0 +1,51 @@
+services:
+
+  #PHP Service
+  app:
+    build:
+      context: .
+    image: api-precpago
+    container_name: precpago_app
+    restart: unless-stopped
+    tty: true
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+    working_dir: /var/www/html/
+    volumes:
+      - ./:/var/www/html/
+    networks:
+      - app-network
+
+  #NGINX
+  webserver:
+    image: nginx:alpine
+    container_name: precpago_webserver
+    restart: unless-stopped
+    tty: true
+    depends_on:
+      - app
+    ports:
+      - 8181:8181
+    volumes:
+      - ./:/var/www/html/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  composer:
+    restart: 'no'
+    depends_on:
+      - webserver
+    image: composer:2
+    command: sh -c "composer install --ignore-platform-reqs && cp .env.example .env && php artisan key:generate"
+    volumes:
+        - ./:/app
+    networks:
+      - app-network
+
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
