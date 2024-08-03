@@ -19,3 +19,9 @@ Certifique-se de ter os seguintes softwares instalados em sua máquina:
 
    ### Acesse a aplicação:
     A aplicação estará disponível em http://localhost:8181
+
+### Tecnologias utilizadas
+
+- NGINX
+- PHP_FPM
+- RabbitMQ 
