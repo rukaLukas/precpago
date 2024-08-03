@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Throwable;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -35,6 +36,18 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'message' => 'endpoint não encontrado'
             ], 404);
+        }
+
+        if ($exception instanceof ValidationException) { 
+            return response('', 422);
+        }
+
+        if ($exception instanceof OlderTimestampException) {
+            return response('', 204);
+        }
+
+        if ($exception instanceof \Exception) {
+            return response('', 400);
         }
 
         return parent::render($request, $exception);

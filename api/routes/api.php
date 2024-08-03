@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StatisticController;
+use App\Http\Controllers\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,14 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-// Route::get('/health', function () {
-//     return ['up' => true];
-// });
-
 Route::get('/health', function(){    
     return response()->json(['status' => 'ok']);
 });
+
+Route::post('/transactions', [TransactionController::class, 'store']);
+Route::delete('/transactions', [TransactionController::class, 'destroy']);
+Route::get('/statistics', [StatisticController::class, 'index']);

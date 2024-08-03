@@ -9,9 +9,11 @@ services:
     restart: unless-stopped
     tty: true
     environment:
-      APP_ENV: local
-      APP_DEBUG: true
+      APP_ENV: production
+      APP_DEBUG: false
     working_dir: /var/www/html/
+    depends_on:
+      - rabbitmq
     volumes:
       - ./:/var/www/html/
     networks:
@@ -41,6 +43,15 @@ services:
     command: sh -c "composer install --ignore-platform-reqs && cp .env.example .env && php artisan key:generate"
     volumes:
         - ./:/app
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3.9-management-alpine
+    container_name: precpago_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - app-network
 

@@ -1,7 +1,4 @@
-FROM php:8-fpm
-
-# Copy composer.lock and composer.json into the working directory
-# COPY composer.lock composer.json /var/www/html/
+FROM php:8.0-fpm
 
 # Set working directory
 WORKDIR /var/www/html/
@@ -9,12 +6,20 @@ WORKDIR /var/www/html/
 # Install dependencies for the operating system software
 RUN apt-get update && apt-get install -y \
     build-essential \
+    locales \
     zip \
     vim \
-    git \
     libonig-dev \
     curl \
-    wget
+    wget \
+    libssl-dev \
+    librabbitmq-dev   
+
+# install amqp extension
+RUN docker-php-ext-install bcmath
+RUN apt-get update && apt-get install -y librabbitmq-dev && pecl install amqp
+RUN docker-php-ext-enable amqp
+RUN docker-php-ext-install sockets
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

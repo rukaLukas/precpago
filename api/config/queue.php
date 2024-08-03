@@ -31,7 +31,7 @@ return [
     'connections' => [
 
         'sync' => [
-            'driver' => 'sync',
+            'driver' => 'sync',            
         ],
 
         'database' => [
@@ -70,7 +70,6 @@ return [
             'block_for' => null,
             'after_commit' => false,
         ],
-
     ],
 
     /*
