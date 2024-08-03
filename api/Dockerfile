@@ -45,5 +45,4 @@ RUN composer install --no-interaction
 
 # Expose port 9000 and start php-fpm server (for FastCGI Process Manager)
 EXPOSE 9000
-# ENTRYPOINT cp .env.example .env && php-fpm
 CMD [ "php-fpm" ]
