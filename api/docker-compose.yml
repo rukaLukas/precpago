@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
 
   #PHP Service
@@ -20,7 +22,8 @@ services:
       RABBITMQ_VHOST: /
     working_dir: /var/www/html/
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     volumes:
       - ./:/var/www/html/
     networks:
@@ -42,17 +45,6 @@ services:
     networks:
       - app-network
 
-  composer:
-    restart: 'no'
-    depends_on:
-      - webserver
-    image: composer:2
-    command: sh -c "composer install --ignore-platform-reqs && if [ ! -f .env ]; then cp .env.example .env; fi && php artisan key:generate"
-    volumes:
-        - ./:/app
-    networks:
-      - app-network
-
   rabbitmq:
     image: rabbitmq:3.9-management-alpine
     container_name: precpago_rabbitmq
@@ -61,6 +53,11 @@ services:
       - "15672:15672"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 
 #Docker Networks

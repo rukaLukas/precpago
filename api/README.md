@@ -13,8 +13,10 @@ Certifique-se de ter os seguintes softwares instalados em sua máquina:
 
    ```sh
    git clone https://github.com/seu-usuario/seu-repositorio.git
-   cd seu-repositorio   
-   docker-compose up -d   
+   cd seu-repositorio
+   docker-compose build app   
+   docker-compose up -d
+   docker exec -ti precpago_app php artisan statistics:consume   
    ```
 
    ### Acesse a aplicação:

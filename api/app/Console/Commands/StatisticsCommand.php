@@ -45,10 +45,10 @@ class StatisticsCommand extends Command
         $transaction = json_decode($transaction, true);
         $statistics = Cache::get('statistics');       
 
-        $sum = is_null($statistics) ? 0 : $statistics[0]['sum']; //0;
-        $count = is_null($statistics) ? 1 : ++$statistics[0]['count']; //count($transactions);
-        $max = is_null($statistics) ? 0 : $statistics[0]['max']; //0;
-        $min = is_null($statistics) ? PHP_FLOAT_MAX : $statistics[0]['min']; //PHP_FLOAT_MAX
+        $sum = is_null($statistics) ? 0 : $statistics[0]['sum']; 
+        $count = is_null($statistics) ? 1 : ++$statistics[0]['count']; 
+        $max = is_null($statistics) ? 0 : $statistics[0]['max']; 
+        $min = is_null($statistics) ? PHP_FLOAT_MAX : $statistics[0]['min']; 
         $amount = (float) $transaction['amount'];
         $sum += $amount;
         $max = max($max, $amount);

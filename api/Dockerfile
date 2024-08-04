@@ -38,11 +38,19 @@ RUN chown -R www-data:www-data \
      /var/www/html/storage \
      /var/www/html/bootstrap/cache
 
+# Create the log file and set the ownership to www-data
+RUN touch /var/www/html/storage/logs/laravel.log && \
+    chown www-data:www-data /var/www/html/storage/logs/laravel.log
+
 # Install composer (php package manager)
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN composer install --no-interaction
+# RUN composer install --no-interaction
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose port 9000 and start php-fpm server (for FastCGI Process Manager)
 EXPOSE 9000
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD [ "php-fpm" ]
