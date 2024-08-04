@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Services\RabbitMQService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
 class StatisticsCommand extends Command
@@ -22,11 +23,20 @@ class StatisticsCommand extends Command
 
     public function handle()
     {        
-        $this->rabbitMQService->consume(function($msg) {
-            $this->info('Received message: ' . $msg->body);
-            $this->store($msg->body);
-            Cache::put('statistics', $this->statistics, 61);
-            $this->info('Statistics: ' . json_encode(Cache::get('statistics')));
+        $this->rabbitMQService->consume(function($msg) {            
+            $lock = Cache::lock('statistics_lock', 10);
+            try {
+                if ($lock->get()) {
+                    $this->store($msg->body);
+                    Cache::put('statistics', $this->statistics, 60);
+                    $this->info(date('Y-m-d H:i:s') . ' cache of polling flag->>' . Cache::get('statistics_polling_flag'));                    
+                } else {
+                    Log::error('Falha Lock Cache statistics_lock. Possível ter ocorrido race condition');
+                }
+            } finally {
+                $lock->release();
+            }
+
         });
     }
 

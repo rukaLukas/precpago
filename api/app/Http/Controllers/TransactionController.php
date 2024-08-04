@@ -2,19 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Illuminate\Http\Request;
-use App\Jobs\ProcessTransaction;
 use App\Services\RabbitMQService;
-use Illuminate\Http\JsonResponse;
-use App\Exceptions\OlderTimestampException;
-use App\Http\Requests\StoreTransactionRequest;
+use Illuminate\Support\Facades\Cache;
 use App\Services\TransactionValidationService;
-use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
 {
-    // protected $createRequest = StoreTransactionRequest::class;
     protected $rabbitMQService;
     protected $validationService;
 
@@ -36,6 +30,7 @@ class TransactionController extends Controller
         ];        
 
         $this->rabbitMQService->publish(json_encode($transaction));
+        Cache::forever('statistics_polling_flag', true);
        
         return response('', 201);
     }
@@ -44,24 +39,5 @@ class TransactionController extends Controller
     {
         $this->rabbitMQService->deleteAllMessages();
         return response('', 204);
-    }
-
-    // private function validateRequest(Request $request)
-    // {   
-    //     $requestBody = $request->getContent();
-    //     throw_if(json_decode($requestBody) === null, new Exception('JSON inválido'));
-        
-    //     $allowedFields = ['amount', 'timestamp'];
-    //     $requestData = json_decode($requestBody, true);
-    //     $extraFields = array_diff(array_keys($requestData), $allowedFields);
-    //     throw_if(!empty($extraFields), new Exception('Invalid fields: ' . implode(', ', $extraFields)));
-
-        
-    //     $timestamp = strtotime($request->input('timestamp'));
-    //     throw_if($timestamp < strtotime('-60 seconds'), new OlderTimestampException());
-        
-    //     $createRequest = app($this->createRequest);
-    //     $request->validate($createRequest->rules());        
-    // }  
-    
+    }    
 }
